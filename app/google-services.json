@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "77848800276",
+    "firebase_url": "https://fifa18prediction.firebaseio.com",
+    "project_id": "fifa18prediction",
+    "storage_bucket": "fifa18prediction.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77848800276:android:b63358bcf9307f38",
+        "android_client_info": {
+          "package_name": "com.example.rteymouri.fifa18prediction"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "77848800276-9s0uc34kreflbdn03e9vodbdv51cu6g7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN1BtFduWVmWSQbwNSzf1n5d71sdEErgE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

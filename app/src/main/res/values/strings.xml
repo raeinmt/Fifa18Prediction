@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Fifa18Prediction</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <string name="login">Login</string>
+    <string name="confirmRegister">Register</string>
+    <string name="passwordHint">Password</string>
+    <string name="emailHint">Email</string>
+    <string name="logoDescription">TODO</string>
+    <string name="username">Name</string>
+    <string name="cancelRegister">Cancel</string>
+    <string name="register">Register</string>
+    <string name="nav_menu_home">Home</string>
+    <string name="nav_menu_results">Results Table</string>
+    <string name="nav_menu_sign_out">Sign out</string>
+    <string name="nav_header">Header</string>
+    <string name="toolbarTitle">Home</string>
+
+</resources>
