@@ -1,22 +1,25 @@
 package com.example.rteymouri.fifa18prediction;
 
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
+
+import com.example.rteymouri.fifa18prediction.footballMatchDataModel.FootballMatch;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class PredictionsActivity extends AppCompatActivity {
+public class PredictionsActivity extends AppCompatActivity implements PredictionsFragment.OnListFragmentInteractionListener {
 
     public  String SIGN_OUT= "Sign out";
     private DrawerLayout mDrawerLayout;
@@ -40,14 +43,29 @@ public class PredictionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_predictions);
 
+        // Creating PredictionsFragment
+
+
+        FragmentManager mFragmentManager = getSupportFragmentManager();
+//        PredictionsFragment mFragment = (PredictionsFragment) mFragmentManager.findFragmentById(R.id.predictionsFragment);
+
+        PredictionsFragment mFragment = PredictionsFragment.newInstance(1);
+        mFragment.getListAdapter();
+//        Bundle args = new Bundle();
+//        args.putInt("column-count", 1);
+//        mFragment.setArguments(args);
+
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.content_frame, mFragment);
+        fragmentTransaction.commit();
+
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mAuth = FirebaseAuth.getInstance();
         navigationView = findViewById(R.id.nav_view);
 
-        TextView header = navigationView.getHeaderView(0).findViewWithTag("123");//.findViewById(R.id.navHeader);
+        TextView header = navigationView.getHeaderView(0).findViewWithTag("123");
         header.setText(mAuth.getCurrentUser().getEmail());
 
-        Log.d("Fifaa","header: " + header);
         // Creating a toolbar and using it as an actionbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -84,5 +102,10 @@ public class PredictionsActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    public void onListFragmentInteraction(FootballMatch item) {
+        Log.d("FIFAa","CALLING onListFragmentInteraction" + item);
     }
 }

@@ -50,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // TODO: Check if email and password is valid
+                mAuth.signOut();
                 String email = emailField.getText().toString();
                 String password = passwordField.getText().toString();
                 Log.d("FIFA 18:","email " + email);
@@ -61,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("FIFA 18:","Email and password cannot be empty");
                 }
                 else {
+
 
                     // Add firebase validation
                     mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
