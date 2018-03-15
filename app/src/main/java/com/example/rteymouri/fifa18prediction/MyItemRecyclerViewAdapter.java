@@ -11,6 +11,7 @@ import com.example.rteymouri.fifa18prediction.PredictionsFragment.OnListFragment
 import com.example.rteymouri.fifa18prediction.footballMatchDataModel.FootballMatch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.firebase.database.ChildEventListener;
@@ -27,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
     private final List<FootballMatch> mValues;
+    private HashMap<String, FootballMatch> mValuesHashMap;
     private final OnListFragmentInteractionListener mListener;
     private ChildEventListener mChildEventListener = new ChildEventListener() {
         @Override
@@ -34,17 +36,17 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
             FootballMatch data = dataSnapshot.getValue(FootballMatch.class);
             Log.d("Fifaa", "DataSnapshot: " + data);
-            mValues.add(new FootballMatch(
-                    data.getTeam1_name(),
-                    data.getTeam1_score(),
-                    data.getTeam2_name(),
-                    data.getTeam2_score()
-            ));
+            mValues.add(data);
+            mValuesHashMap.put(data.toString(),data);
             notifyDataSetChanged();
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            FootballMatch data = dataSnapshot.getValue(FootballMatch.class);
+            Log.d("Fifaa", "DataSnapshot---: " + data);
+            mValuesHashMap.put(data.toString(),data);
+            notifyDataSetChanged();
 
         }
 
@@ -66,6 +68,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     public MyItemRecyclerViewAdapter(OnListFragmentInteractionListener listener) {
         mValues = new ArrayList<>();
+        mValuesHashMap = new HashMap<>();
         mListener = listener;
         DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference().child("results");
         mDatabaseRef.addChildEventListener(mChildEventListener);
@@ -80,11 +83,11 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mTeam1NameView.setText(mValues.get(position).getTeam1_name());
-        holder.mTeam2NameView.setText(mValues.get(position).getTeam2_name());
-        holder.mTeam1ScoreView.setText(mValues.get(position).getTeam1_score().toString());
-        holder.mTeam2ScoreView.setText(mValues.get(position).getTeam2_score().toString());
+        holder.mItem = mValuesHashMap.get(mValues.get(position).toString());
+        holder.mTeam1NameView.setText(holder.mItem.getTeam1_name());
+        holder.mTeam2NameView.setText(holder.mItem.getTeam2_name());
+        holder.mTeam1ScoreView.setText(holder.mItem.getTeam1_score().toString());
+        holder.mTeam2ScoreView.setText(holder.mItem.getTeam2_score().toString());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
