@@ -11,33 +11,34 @@
         android:id="@+id/team1_name"
         android:layout_width="70dp"
         android:layout_height="wrap_content"
-
         android:background="@color/colorPrimaryDark"
         android:textAppearance="?attr/textAppearanceListItem"
 
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/team1_score"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <EditText
         android:id="@+id/team1_score"
         android:layout_width="20dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
         android:textAppearance="?attr/textAppearanceListItem"
+        android:inputType="number"
 
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/team2_score"
         app:layout_constraintStart_toEndOf="@+id/team1_name" />
 
-    <TextView
+    <EditText
         android:id="@+id/team2_score"
         android:layout_width="20dp"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItem"
+        android:inputType="number"
 
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -56,7 +57,18 @@
 
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/team2_score" />
+        app:layout_constraintStart_toEndOf="@+id/team2_score"
+        app:layout_constraintEnd_toStartOf="@+id/submit_score_button"/>
 
+    <Button
+        android:id="@+id/submit_score_button"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:text="@string/submit_score"
+        android:textSize="8sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="@dimen/activity_horizontal_margin" />
 </android.support.constraint.ConstraintLayout>

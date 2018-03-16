@@ -5,11 +5,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.rteymouri.fifa18prediction.PredictionsFragment.OnListFragmentInteractionListener;
 import com.example.rteymouri.fifa18prediction.footballMatchDataModel.FootballMatch;
 
+import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,13 +84,27 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = mValuesHashMap.get(mValues.get(position).toString());
         holder.mTeam1NameView.setText(holder.mItem.getTeam1_name());
         holder.mTeam2NameView.setText(holder.mItem.getTeam2_name());
         holder.mTeam1ScoreView.setText(holder.mItem.getTeam1_score().toString());
         holder.mTeam2ScoreView.setText(holder.mItem.getTeam2_score().toString());
 
+        holder.mSubmitScoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Fifaa","In Button: "+holder.mTeam1ScoreView.getText());
+                DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+
+                FootballMatch prediction = new FootballMatch(holder.mItem.getTeam1_name(),
+                        Long.parseLong(holder.mTeam1ScoreView.getText().toString()),
+                        holder.mItem.getTeam2_name(),
+                        Long.parseLong(holder.mTeam2ScoreView.getText().toString()));
+
+                mDatabaseRef.child("predictions").child(prediction.toString()).setValue(prediction);
+            }
+        });
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,6 +130,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final TextView mTeam2NameView;
         public final TextView mTeam1ScoreView;
         public final TextView mTeam2ScoreView;
+        public final Button mSubmitScoreButton;
         public FootballMatch mItem;
 
         public ViewHolder(View view) {
@@ -123,6 +140,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mTeam2NameView = (TextView) view.findViewById(R.id.team2_name);
             mTeam1ScoreView = (TextView) view.findViewById(R.id.team1_score);
             mTeam2ScoreView = (TextView) view.findViewById(R.id.team2_score);
+            mSubmitScoreButton = (Button) view.findViewById(R.id.submit_score_button);
         }
 
         @Override
