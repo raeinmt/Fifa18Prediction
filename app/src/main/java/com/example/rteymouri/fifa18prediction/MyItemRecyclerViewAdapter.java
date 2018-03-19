@@ -72,7 +72,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         mValues = new ArrayList<>();
         mValuesHashMap = new HashMap<>();
         mListener = listener;
-        DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference().child("results");
+        DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference().child("predictions");
         mDatabaseRef.addChildEventListener(mChildEventListener);
     }
 

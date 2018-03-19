@@ -16,10 +16,13 @@ import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 
+import com.example.rteymouri.fifa18prediction.dummy.DummyContent;
 import com.example.rteymouri.fifa18prediction.footballMatchDataModel.FootballMatch;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class PredictionsActivity extends AppCompatActivity implements PredictionsFragment.OnListFragmentInteractionListener {
+public class PredictionsActivity extends AppCompatActivity implements
+        PredictionsFragment.OnListFragmentInteractionListener,
+        ResultsFragment.OnListFragmentInteractionListener {
 
     public  String SIGN_OUT= "Sign out";
     private DrawerLayout mDrawerLayout;
@@ -47,9 +50,8 @@ public class PredictionsActivity extends AppCompatActivity implements Prediction
 
 
         FragmentManager mFragmentManager = getSupportFragmentManager();
-//        PredictionsFragment mFragment = (PredictionsFragment) mFragmentManager.findFragmentById(R.id.predictionsFragment);
-
         PredictionsFragment mFragment = PredictionsFragment.newInstance(1);
+//        ResultsFragment mFragment = ResultsFragment.newInstance(1);
         mFragment.getListAdapter();
 //        Bundle args = new Bundle();
 //        args.putInt("column-count", 1);
@@ -81,7 +83,10 @@ public class PredictionsActivity extends AppCompatActivity implements Prediction
 
                 item.setChecked(true);
                 actionBar.setTitle(item.getTitle().toString());
-                //If sign out it tapped log out the user from firebase and start login activity
+                //If sign out it tapped log out the user from Firebase and start login activity
+
+                mDrawerLayout.closeDrawers();
+                
                 if (item.getTitle().toString().equals(SIGN_OUT)) {
 
                     mAuth.signOut();
@@ -91,11 +96,33 @@ public class PredictionsActivity extends AppCompatActivity implements Prediction
                     finish();
                     return false;
                 }
-                mDrawerLayout.closeDrawers();
-
                 //TODO: Here must use fragments to switch out the content view displayed in the background
                 //TODO: https://developer.android.com/guide/components/fragments.html
 
+                Log.d("Fifaa","title: "+ item.getTitle().toString());
+                if(item.getTitle().toString().equals("Results Table")){
+
+                    FragmentManager mFragmentManager = getSupportFragmentManager();
+                    ResultsFragment mFragment = ResultsFragment.newInstance(1);
+                    mFragment.getListAdapter();
+
+                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+                    fragmentTransaction.add(R.id.content_frame, mFragment);
+                    fragmentTransaction.commit();
+                    return false;
+                }
+
+                if(item.getTitle().toString().equals("Home")){
+
+                    FragmentManager mFragmentManager = getSupportFragmentManager();
+                    PredictionsFragment mFragment = PredictionsFragment.newInstance(1);
+                    mFragment.getListAdapter();
+
+                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+                    fragmentTransaction.add(R.id.content_frame, mFragment);
+                    fragmentTransaction.commit();
+                    return false;
+                }
 
                 return true;
             }
@@ -107,5 +134,12 @@ public class PredictionsActivity extends AppCompatActivity implements Prediction
     @Override
     public void onListFragmentInteraction(FootballMatch item) {
         Log.d("FIFAa","CALLING onListFragmentInteraction" + item);
+    }
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+
+        Log.d("FIFAa","CALLING onListFragmentInteraction results" + item);
+
     }
 }
