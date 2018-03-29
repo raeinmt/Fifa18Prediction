@@ -66,6 +66,14 @@ public class FootballMatch {
         return team2_score;
     }
 
+    public Integer getTeam1_actual_score() {
+        return team1_actual_score;
+    }
+
+    public Integer getTeam2_actual_score() {
+        return team2_actual_score;
+    }
+
     //Setter
     public void setTeam1_name(String team1_name) {
         this.team1_name = team1_name;
@@ -82,4 +90,5 @@ public class FootballMatch {
     public void setTeam2_score(Integer team2_score) {
         this.team2_score = team2_score;
     }
+
 }

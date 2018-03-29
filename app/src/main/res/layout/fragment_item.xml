@@ -91,6 +91,11 @@
         app:layout_constraintStart_toStartOf="@+id/team1_score"
     />
     <Button
+        android:id="@+id/test_push"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:text="*"/>
+    <Button
         android:id="@+id/submit_score_button"
         android:layout_width="60dp"
         android:layout_height="wrap_content"

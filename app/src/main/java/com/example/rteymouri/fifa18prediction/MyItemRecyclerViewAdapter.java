@@ -15,6 +15,7 @@ import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.firebase.database.ChildEventListener;
@@ -37,8 +38,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
+            Log.d("Fifaa", "DataSnapshot: " + dataSnapshot);
             FootballMatch data = dataSnapshot.getValue(FootballMatch.class);
-            Log.d("Fifaa", "DataSnapshot: " + data);
+            Log.d("Fifaa", "Data: " + data);
             mValues.add(data);
             mValuesHashMap.put(data.toString(),data);
             notifyDataSetChanged();
@@ -75,6 +77,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         mListener = listener;
         DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference().child("predictions");
         mDatabaseRef.addChildEventListener(mChildEventListener);
+        createData();
+
     }
 
     @Override
@@ -91,10 +95,17 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mTeam2NameView.setText(holder.mItem.getTeam2_name());
         holder.mTeam1ScoreView.setText(holder.mItem.getTeam1_score().toString());
         holder.mTeam2ScoreView.setText(holder.mItem.getTeam2_score().toString());
-//        holder.mTeam1ActualScoreView.setText("2");
-//        holder.mTeam2ActualScoreView.setText("3");
+        holder.mTeam1ActualScoreView.setText(holder.mItem.getTeam1_actual_score().toString());
+        holder.mTeam2ActualScoreView.setText(holder.mItem.getTeam2_actual_score().toString());
 
+        holder.mTestPush.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Fifaa", "HELLO" + position);
+                createData();
 
+            }
+        });
         holder.mSubmitScoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +115,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 FootballMatch prediction = new FootballMatch(holder.mItem.getTeam1_name(),
                         Integer.parseInt(holder.mTeam1ScoreView.getText().toString()),
                         holder.mItem.getTeam2_name(),
-                        Integer.parseInt(holder.mTeam2ScoreView.getText().toString()));
+                        Integer.parseInt(holder.mTeam2ScoreView.getText().toString()),
+                        Integer.parseInt(holder.mTeam1ActualScoreView.getText().toString()),
+                        Integer.parseInt(holder.mTeam2ActualScoreView.getText().toString()));
 
                 mDatabaseRef.child("predictions").child(prediction.toString()).setValue(prediction);
             }
@@ -121,6 +134,15 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         });
     }
 
+    private void createData (){
+        DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        FootballMatch newGame = new FootballMatch("Iran",1,"Spain",0, 1,4);
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/results/"+newGame.toString(),newGame);
+        childUpdates.put("/predictions/"+newGame.toString(),newGame);
+        mDatabaseRef.updateChildren(childUpdates);
+    }
     @Override
     public int getItemCount() {
 
@@ -137,6 +159,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final TextView mTeam1ActualScoreView;
         public final TextView mTeam2ActualScoreView;
         public final Button mSubmitScoreButton;
+        //TODO: Move this to admin application
+        public final Button mTestPush;
         public FootballMatch mItem;
 
         public ViewHolder(View view) {
@@ -149,6 +173,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mTeam1ActualScoreView = view.findViewById(R.id.team1_actual_results);
             mTeam2ActualScoreView = view.findViewById(R.id.team2_actual_results);
             mSubmitScoreButton = view.findViewById(R.id.submit_score_button);
+            mTestPush = view.findViewById(R.id.test_push);
         }
 
         @Override
