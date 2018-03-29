@@ -15,6 +15,7 @@ import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
     private final List<FootballMatch> mValues;
-    private HashMap<String, FootballMatch> mValuesHashMap;
+    private ConcurrentHashMap<String, FootballMatch> mValuesHashMap;
     private final OnListFragmentInteractionListener mListener;
     private ChildEventListener mChildEventListener = new ChildEventListener() {
         @Override
@@ -70,7 +71,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     public MyItemRecyclerViewAdapter(OnListFragmentInteractionListener listener) {
         mValues = new ArrayList<>();
-        mValuesHashMap = new HashMap<>();
+        mValuesHashMap = new ConcurrentHashMap<>();
         mListener = listener;
         DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference().child("predictions");
         mDatabaseRef.addChildEventListener(mChildEventListener);
@@ -90,6 +91,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mTeam2NameView.setText(holder.mItem.getTeam2_name());
         holder.mTeam1ScoreView.setText(holder.mItem.getTeam1_score().toString());
         holder.mTeam2ScoreView.setText(holder.mItem.getTeam2_score().toString());
+//        holder.mTeam1ActualScoreView.setText("2");
+//        holder.mTeam2ActualScoreView.setText("3");
+
 
         holder.mSubmitScoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,9 +102,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
 
                 FootballMatch prediction = new FootballMatch(holder.mItem.getTeam1_name(),
-                        Long.parseLong(holder.mTeam1ScoreView.getText().toString()),
+                        Integer.parseInt(holder.mTeam1ScoreView.getText().toString()),
                         holder.mItem.getTeam2_name(),
-                        Long.parseLong(holder.mTeam2ScoreView.getText().toString()));
+                        Integer.parseInt(holder.mTeam2ScoreView.getText().toString()));
 
                 mDatabaseRef.child("predictions").child(prediction.toString()).setValue(prediction);
             }
@@ -130,17 +134,21 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final TextView mTeam2NameView;
         public final TextView mTeam1ScoreView;
         public final TextView mTeam2ScoreView;
+        public final TextView mTeam1ActualScoreView;
+        public final TextView mTeam2ActualScoreView;
         public final Button mSubmitScoreButton;
         public FootballMatch mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mTeam1NameView = (TextView) view.findViewById(R.id.team1_name);
-            mTeam2NameView = (TextView) view.findViewById(R.id.team2_name);
-            mTeam1ScoreView = (TextView) view.findViewById(R.id.team1_score);
-            mTeam2ScoreView = (TextView) view.findViewById(R.id.team2_score);
-            mSubmitScoreButton = (Button) view.findViewById(R.id.submit_score_button);
+            mTeam1NameView = view.findViewById(R.id.team1_name);
+            mTeam2NameView = view.findViewById(R.id.team2_name);
+            mTeam1ScoreView = view.findViewById(R.id.team1_score);
+            mTeam2ScoreView = view.findViewById(R.id.team2_score);
+            mTeam1ActualScoreView = view.findViewById(R.id.team1_actual_results);
+            mTeam2ActualScoreView = view.findViewById(R.id.team2_actual_results);
+            mSubmitScoreButton = view.findViewById(R.id.submit_score_button);
         }
 
         @Override
