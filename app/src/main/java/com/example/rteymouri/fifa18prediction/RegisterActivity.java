@@ -67,13 +67,14 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
-                            //TODO: Add the user to database
+
+                            //TODO: Check if the email already exists
                             User newUser = new User(name,email,mAuth.getCurrentUser().getUid());
-                            Map userUpdate = new HashMap<>();
+
+                            Map <String, Object> userUpdate = new HashMap<>();
                             userUpdate.put(newUser.getUserId(), newUser);
                             mDatabase.child("users").updateChildren(userUpdate);
-//                            mDatabase.child("users").setValue(newUser.getUserId());
-//                            mDatabase.child("users").child(newUser.getUserId()).setValue(newUser);
+
 
                             Log.d("FIFAA 18:","confirmRegister Done!");
                             Intent predictionsIntent = new Intent(getApplicationContext(),PredictionsActivity.class);

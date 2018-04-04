@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -79,7 +80,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         mValuesHashMap = new ConcurrentHashMap<>();
         mListener = listener;
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
-        mDatabaseRef.child("prediction").addChildEventListener(mChildEventListener);
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mDatabaseRef.child("predictions").child(userId).addChildEventListener(mChildEventListener);
 //        createData();
 
     }
@@ -105,7 +107,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             @Override
             public void onClick(View v) {
                 Log.d("Fifaa", "HELLO" + position);
-                createData();
+//                createData();
                 mDatabaseRef.child("user").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -129,7 +131,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             public void onClick(View v) {
                 Log.d("Fifaa","In Button: "+holder.mTeam1ScoreView.getText());
 
-
                 FootballMatch prediction = new FootballMatch(holder.mItem.getTeam1_name(),
                         Integer.parseInt(holder.mTeam1ScoreView.getText().toString()),
                         holder.mItem.getTeam2_name(),
@@ -137,7 +138,12 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         Integer.parseInt(holder.mTeam1ActualScoreView.getText().toString()),
                         Integer.parseInt(holder.mTeam2ActualScoreView.getText().toString()));
 
-                mDatabaseRef.child("prediction").child(prediction.toString()).setValue(prediction);
+
+                Map<String, Object> predictionUpdates = new HashMap<>();
+                String predictionKey = FirebaseAuth.getInstance().getCurrentUser().getUid() +"/"+ prediction.toString();
+                predictionUpdates.put(predictionKey,prediction);
+
+                mDatabaseRef.child("predictions").updateChildren(predictionUpdates);
 
             }
         });
@@ -155,12 +161,18 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     private void createData (){
 
-        FootballMatch newGame = new FootballMatch("Iran",1,"Spain",0, 1,4);
+        FootballMatch predictionGame = new FootballMatch("England",3,"Japan",12, 1,4);
+        FootballMatch resultGame = new FootballMatch("England",14,"Japan",15, 4,1);
 
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/results/"+newGame.toString(),newGame);
-        childUpdates.put("/prediction/"+newGame.toString(),newGame);
-        mDatabaseRef.updateChildren(childUpdates);
+        Map<String, Object> predictionsUpdates = new HashMap<>();
+        String predictionKey = FirebaseAuth.getInstance().getCurrentUser().getUid() +"/"+ predictionGame.toString();
+        predictionsUpdates.put(predictionKey,predictionGame);
+        mDatabaseRef.child("predictions").updateChildren(predictionsUpdates);
+
+        Map<String, Object> resultsUpdates = new HashMap<>();
+        String resultsKey = resultGame.toString();
+        resultsUpdates.put(resultsKey, resultGame);
+        mDatabaseRef.child("results").updateChildren(resultsUpdates);
     }
     @Override
     public int getItemCount() {
