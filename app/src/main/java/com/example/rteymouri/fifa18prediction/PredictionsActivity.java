@@ -16,13 +16,14 @@ import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 
-import com.example.rteymouri.fifa18prediction.dummy.DummyContent;
+import com.example.rteymouri.fifa18prediction.User.User;
 import com.example.rteymouri.fifa18prediction.footballMatchDataModel.FootballMatch;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class PredictionsActivity extends AppCompatActivity implements
-        PredictionsFragment.OnListFragmentInteractionListener,
-        ResultsFragment.OnListFragmentInteractionListener {
+        PredictionsFragment.OnListFragmentInteractionListener
+//    ,ResultsFragment.OnListFragmentInteractionListener
+         {
 
     public  String SIGN_OUT= "Sign out";
     private DrawerLayout mDrawerLayout;
@@ -102,13 +103,13 @@ public class PredictionsActivity extends AppCompatActivity implements
                 Log.d("Fifaa","title: "+ item.getTitle().toString());
                 if(item.getTitle().toString().equals("Results Table")){
 
-                    FragmentManager mFragmentManager = getSupportFragmentManager();
-                    ResultsFragment mFragment = ResultsFragment.newInstance(1);
-                    mFragment.getListAdapter();
-
-                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.add(R.id.content_frame, mFragment);
-                    fragmentTransaction.commit();
+//                    FragmentManager mFragmentManager = getSupportFragmentManager();
+//                    ResultsFragment mFragment = ResultsFragment.newInstance(1);
+//                    mFragment.getListAdapter();
+//
+//                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+//                    fragmentTransaction.add(R.id.content_frame, mFragment);
+//                    fragmentTransaction.commit();
                     return false;
                 }
 
@@ -136,10 +137,10 @@ public class PredictionsActivity extends AppCompatActivity implements
         Log.d("FIFAa","CALLING onListFragmentInteraction" + item);
     }
 
-    @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-
-        Log.d("FIFAa","CALLING onListFragmentInteraction results" + item);
-
-    }
+//    @Override
+//    public void onListFragmentInteraction(User.DummyItem item) {
+//
+//        Log.d("FIFAa","CALLING onListFragmentInteraction results" + item);
+//
+//    }
 }

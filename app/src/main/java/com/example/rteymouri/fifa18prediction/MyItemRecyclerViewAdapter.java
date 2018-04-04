@@ -23,6 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link FootballMatch} and makes a call to the
@@ -34,6 +35,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     private final List<FootballMatch> mValues;
     private ConcurrentHashMap<String, FootballMatch> mValuesHashMap;
     private final OnListFragmentInteractionListener mListener;
+    private final DatabaseReference mDatabaseRef;
+
     private ChildEventListener mChildEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -75,9 +78,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         mValues = new ArrayList<>();
         mValuesHashMap = new ConcurrentHashMap<>();
         mListener = listener;
-        DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference().child("predictions");
-        mDatabaseRef.addChildEventListener(mChildEventListener);
-        createData();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        mDatabaseRef.child("prediction").addChildEventListener(mChildEventListener);
+//        createData();
 
     }
 
@@ -103,6 +106,21 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             public void onClick(View v) {
                 Log.d("Fifaa", "HELLO" + position);
                 createData();
+                mDatabaseRef.child("user").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            Log.d("Fifaa","In Button: "+snapshot);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
             }
         });
@@ -110,7 +128,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             @Override
             public void onClick(View v) {
                 Log.d("Fifaa","In Button: "+holder.mTeam1ScoreView.getText());
-                DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+
 
                 FootballMatch prediction = new FootballMatch(holder.mItem.getTeam1_name(),
                         Integer.parseInt(holder.mTeam1ScoreView.getText().toString()),
@@ -119,7 +137,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         Integer.parseInt(holder.mTeam1ActualScoreView.getText().toString()),
                         Integer.parseInt(holder.mTeam2ActualScoreView.getText().toString()));
 
-                mDatabaseRef.child("predictions").child(prediction.toString()).setValue(prediction);
+                mDatabaseRef.child("prediction").child(prediction.toString()).setValue(prediction);
+
             }
         });
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -135,12 +154,12 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     }
 
     private void createData (){
-        DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+
         FootballMatch newGame = new FootballMatch("Iran",1,"Spain",0, 1,4);
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/results/"+newGame.toString(),newGame);
-        childUpdates.put("/predictions/"+newGame.toString(),newGame);
+        childUpdates.put("/prediction/"+newGame.toString(),newGame);
         mDatabaseRef.updateChildren(childUpdates);
     }
     @Override
