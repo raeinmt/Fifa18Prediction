@@ -14,6 +14,7 @@ public class FootballMatch {
     private Integer team2_score;
     private Integer team1_actual_score;
     private Integer team2_actual_score;
+    private String match_date_time;
 
     public FootballMatch(){
 
@@ -27,11 +28,13 @@ public class FootballMatch {
         this.team2_score = team2_score;
         this.team1_actual_score = 0;
         this.team2_actual_score = 0;
+        this.match_date_time = "";
     }
 
     public FootballMatch(String team1_name, Integer team1_score,
                          String team2_name, Integer team2_score,
-                         Integer team1_actual_score, Integer team2_actual_score) {
+                         Integer team1_actual_score, Integer team2_actual_score,
+                         String match_date_time) {
 
         this.team1_name = team1_name;
         this.team2_name = team2_name;
@@ -39,6 +42,7 @@ public class FootballMatch {
         this.team2_score = team2_score;
         this.team1_actual_score = team1_actual_score;
         this.team2_actual_score = team2_actual_score;
+        this.match_date_time = match_date_time;
 
     }
 
@@ -72,6 +76,10 @@ public class FootballMatch {
 
     public Integer getTeam2_actual_score() {
         return team2_actual_score;
+    }
+
+    public String getMatch_date_time() {
+        return match_date_time;
     }
 
     //Setter

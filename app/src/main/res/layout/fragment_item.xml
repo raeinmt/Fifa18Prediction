@@ -90,11 +90,17 @@
         app:layout_constraintTop_toBottomOf="@+id/team1_score"
         app:layout_constraintStart_toStartOf="@+id/team1_score"
     />
-    <Button
-        android:id="@+id/test_push"
+
+    <TextView
+        android:id="@+id/match_date_time"
         android:layout_width="30dp"
         android:layout_height="wrap_content"
-        android:text="*"/>
+
+        android:background="@android:color/holo_purple"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="@+id/team1_name" />
+
     <Button
         android:id="@+id/submit_score_button"
         android:layout_width="60dp"

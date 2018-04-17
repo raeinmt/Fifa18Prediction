@@ -20,9 +20,12 @@ import com.example.rteymouri.fifa18prediction.User.User;
 import com.example.rteymouri.fifa18prediction.footballMatchDataModel.FootballMatch;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class PredictionsActivity extends AppCompatActivity implements
         PredictionsFragment.OnListFragmentInteractionListener
-//    ,ResultsFragment.OnListFragmentInteractionListener
          {
 
     public  String SIGN_OUT= "Sign out";
@@ -48,7 +51,6 @@ public class PredictionsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_predictions);
 
         // Creating PredictionsFragment
-
 
         FragmentManager mFragmentManager = getSupportFragmentManager();
         PredictionsFragment mFragment = PredictionsFragment.newInstance(1);

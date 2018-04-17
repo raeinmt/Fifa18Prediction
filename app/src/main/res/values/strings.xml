@@ -16,5 +16,12 @@
     <string name="nav_header">Header</string>
     <string name="toolbarTitle">Home</string>
     <string name="submit_score">Submit</string>
+    <string name="admin">create/update data</string>
+    <string name="title_activity_admin">AdminActivity</string>
+    <string name="first_team">first team name</string>
+    <string name="second_team">second team name</string>
+    <string name="first_score">first team score</string>
+    <string name="second_score">second team score</string>
+    <string name="match_datetime">yyyy-MM-dd HH:mm</string>
 
 </resources>

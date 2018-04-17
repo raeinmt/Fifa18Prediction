@@ -20,6 +20,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private Button registerButton;
     private Button loginButton;
+    private Button adminButton;
     private EditText emailField;
     private EditText passwordField;
     private FirebaseAuth mAuth;
@@ -29,11 +30,20 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        adminButton = findViewById(R.id.admin);
         registerButton = findViewById(R.id.register);
         loginButton = findViewById(R.id.login);
         emailField = findViewById(R.id.email);
         passwordField = findViewById(R.id.password);
         mAuth = FirebaseAuth.getInstance();
+
+        adminButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent adminActivity = new Intent(getApplicationContext(), AdminActivity.class);
+                startActivity(adminActivity);
+            }
+        });
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override

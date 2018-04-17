@@ -1,5 +1,7 @@
 package com.example.rteymouri.fifa18prediction;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,12 +14,16 @@ import com.example.rteymouri.fifa18prediction.PredictionsFragment.OnListFragment
 import com.example.rteymouri.fifa18prediction.footballMatchDataModel.FootballMatch;
 
 import java.security.acl.LastOwnerException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.Date;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -93,6 +99,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         return new ViewHolder(view);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = mValuesHashMap.get(mValues.get(position).toString());
@@ -102,30 +109,26 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mTeam2ScoreView.setText(holder.mItem.getTeam2_score().toString());
         holder.mTeam1ActualScoreView.setText(holder.mItem.getTeam1_actual_score().toString());
         holder.mTeam2ActualScoreView.setText(holder.mItem.getTeam2_actual_score().toString());
+        holder.mDateTimeView.setText(holder.mItem.getMatch_date_time());
 
-        holder.mTestPush.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Fifaa", "HELLO" + position);
-//                createData();
-                mDatabaseRef.child("user").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            Log.d("Fifaa","In Button: "+snapshot);
-                        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        try {
+            // If date of the game has past current date time user cannot predict the game any more
+            Date date = format.parse(holder.mItem.getMatch_date_time());
+            if (date.compareTo(new Date()) < 0){
 
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
+                Log.d("Fifaa", "holder date: "+date);
+                Log.d("Fifaa", "current date: "+ new Date());
+                holder.mTeam1ScoreView.setEnabled(false);
+                holder.mTeam2ScoreView.setEnabled(false);
             }
-        });
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         holder.mSubmitScoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,7 +139,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         holder.mItem.getTeam2_name(),
                         Integer.parseInt(holder.mTeam2ScoreView.getText().toString()),
                         Integer.parseInt(holder.mTeam1ActualScoreView.getText().toString()),
-                        Integer.parseInt(holder.mTeam2ActualScoreView.getText().toString()));
+                        Integer.parseInt(holder.mTeam2ActualScoreView.getText().toString()),
+                        holder.mItem.getMatch_date_time());
 
 
                 Map<String, Object> predictionUpdates = new HashMap<>();
@@ -147,6 +151,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
             }
         });
+
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,21 +164,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         });
     }
 
-    private void createData (){
 
-        FootballMatch predictionGame = new FootballMatch("England",3,"Japan",12, 1,4);
-        FootballMatch resultGame = new FootballMatch("England",14,"Japan",15, 4,1);
-
-        Map<String, Object> predictionsUpdates = new HashMap<>();
-        String predictionKey = FirebaseAuth.getInstance().getCurrentUser().getUid() +"/"+ predictionGame.toString();
-        predictionsUpdates.put(predictionKey,predictionGame);
-        mDatabaseRef.child("predictions").updateChildren(predictionsUpdates);
-
-        Map<String, Object> resultsUpdates = new HashMap<>();
-        String resultsKey = resultGame.toString();
-        resultsUpdates.put(resultsKey, resultGame);
-        mDatabaseRef.child("results").updateChildren(resultsUpdates);
-    }
     @Override
     public int getItemCount() {
 
@@ -190,8 +181,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final TextView mTeam1ActualScoreView;
         public final TextView mTeam2ActualScoreView;
         public final Button mSubmitScoreButton;
+        public final TextView mDateTimeView;
         //TODO: Move this to admin application
-        public final Button mTestPush;
         public FootballMatch mItem;
 
         public ViewHolder(View view) {
@@ -204,7 +195,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mTeam1ActualScoreView = view.findViewById(R.id.team1_actual_results);
             mTeam2ActualScoreView = view.findViewById(R.id.team2_actual_results);
             mSubmitScoreButton = view.findViewById(R.id.submit_score_button);
-            mTestPush = view.findViewById(R.id.test_push);
+            mDateTimeView = view.findViewById(R.id.match_date_time);
         }
 
         @Override
