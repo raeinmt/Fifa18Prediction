@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import com.example.rteymouri.fifa18prediction.R;
 import com.example.rteymouri.fifa18prediction.footballMatchDataModel.FootballMatch;
+import com.example.rteymouri.fifa18prediction.footballMatchDataModel.ResultsMatch;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,7 +33,7 @@ public class AdminActivity extends AppCompatActivity {
     private EditText mMatchDateTimeView;
     private DatabaseReference mDatabaseRef;
     private FirebaseAuth mAuth;
-    private FootballMatch resultGame;
+    private ResultsMatch resultGame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +62,11 @@ public class AdminActivity extends AppCompatActivity {
 
 
 
-                resultGame = new FootballMatch(
+                resultGame = new ResultsMatch(
                         first_team_name,
                         first_team_score,
                         second_team_name,
                         second_team_score,
-                        0,
-                        0,
                         match_date_time
                 );
 
@@ -75,25 +74,36 @@ public class AdminActivity extends AppCompatActivity {
                 String resultsKey = resultGame.toString();
                 resultsUpdates.put(resultsKey, resultGame);
                 mDatabaseRef.child("results").updateChildren(resultsUpdates);
+                Log.d("Fifaa","Check db");
 
-                mDatabaseRef.child("users").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot d: dataSnapshot.getChildren()) {
-
-                            Map<String, Object> predictionsUpdates = new HashMap<>();
-                            String predictionKey = d.getKey() +"/"+ resultGame.toString();
-                            predictionsUpdates.put(predictionKey,resultGame);
-                            mDatabaseRef.child("predictions").updateChildren(predictionsUpdates);
-
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
+//                mDatabaseRef.child("users").addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        for (DataSnapshot d: dataSnapshot.getChildren()) {
+//
+//                            Map<String, Object> predictionsUpdates = new HashMap<>();
+//
+//                            String predictionKey = d.getKey() +"/"+ resultGame.toString();
+//                            Log.d("Fifaa", "Prediction:" + mDatabaseRef.child("predictions").child(predictionKey).child("team1_actual_score"));
+////                            if (d.child(predictionKey).exists()){
+//                                mDatabaseRef.child("predictions").child(predictionKey).child("team1_actual_score").setValue(resultGame.getTeam1_score());
+//                                mDatabaseRef.child("predictions").child(predictionKey).child("team2_actual_score").setValue(resultGame.getTeam2_score());
+////                            }
+////                            else {
+////                                predictionsUpdates.put(predictionKey,resultGame);
+////                                mDatabaseRef.child("predictions").updateChildren(predictionsUpdates);
+//////                                Log.d("Fifaa","==>" + mDatabaseRef.child("predictions").child(predictionKey));
+////                            }
+//
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
             }
         });
 //        private void createData (){

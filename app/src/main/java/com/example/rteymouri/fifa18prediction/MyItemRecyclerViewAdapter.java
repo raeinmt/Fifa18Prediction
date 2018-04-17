@@ -1,5 +1,6 @@
 package com.example.rteymouri.fifa18prediction;
 
+import android.app.ListFragment;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +25,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Date;
+
+import com.example.rteymouri.fifa18prediction.footballMatchDataModel.ResultsMatch;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -44,13 +47,102 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     private final OnListFragmentInteractionListener mListener;
     private final DatabaseReference mDatabaseRef;
 
-    private ChildEventListener mChildEventListener = new ChildEventListener() {
+    /*
+    * This method will get a ResultsMatch object and updates the prediction FootballMatch for
+    * the currently logged in user accordingly.
+    * */
+    private void updatePredictionsActualResults(ResultsMatch resultsMatch){
+
+        int team1_score = resultsMatch.getTeam1_score();
+        int team2_score = resultsMatch.getTeam2_score();
+        String team1_name = resultsMatch.getTeam1_name();
+        String team2_name = resultsMatch.getTeam2_name();
+        String match_date = resultsMatch.getMatch_date_time();
+
+
+        String predictionKey = FirebaseAuth.getInstance().getCurrentUser().getUid() +"/"+ resultsMatch.toString();
+
+        // If result match already exists under user predictions just update the actual results
+        if (mValuesHashMap.containsKey(resultsMatch.toString())){
+
+            FootballMatch currentMatch = mValuesHashMap.get(resultsMatch.toString());
+            currentMatch.setTeam1_score(team1_score);
+            currentMatch.setTeam1_score(team2_score);
+
+            mDatabaseRef.child("predictions").child(predictionKey  + "/team1_actual_score").setValue(team1_score);
+            mDatabaseRef.child("predictions").child(predictionKey  + "/team2_actual_score").setValue(team2_score);
+
+        }
+
+        // If user does not have this in the prediction list just create it with
+        // 0-0 az current results
+        else {
+
+            FootballMatch newMatch = new FootballMatch(
+                    team1_name,
+                    0,
+                    team2_name,
+                    0,
+                    team1_score,
+                    team2_score,
+                    match_date
+            );
+            Map<String, Object> predictionUpdates = new HashMap<>();
+            predictionUpdates.put(predictionKey,newMatch);
+            mDatabaseRef.child("predictions").updateChildren(predictionUpdates);
+        }
+
+
+
+    }
+    private  ChildEventListener mResultsChildEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            ResultsMatch data = dataSnapshot.getValue(ResultsMatch.class);
+            updatePredictionsActualResults(data);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            ResultsMatch data = dataSnapshot.getValue(ResultsMatch.class);
+            updatePredictionsActualResults(data);
+            notifyDataSetChanged();
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+    private ValueEventListener mResultsValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+    private ChildEventListener mPredictionChildEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-            Log.d("Fifaa", "DataSnapshot: " + dataSnapshot);
             FootballMatch data = dataSnapshot.getValue(FootballMatch.class);
-            Log.d("Fifaa", "Data: " + data);
             mValues.add(data);
             mValuesHashMap.put(data.toString(),data);
             notifyDataSetChanged();
@@ -58,8 +150,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
             FootballMatch data = dataSnapshot.getValue(FootballMatch.class);
-            Log.d("Fifaa", "DataSnapshot---: " + data);
             mValuesHashMap.put(data.toString(),data);
             notifyDataSetChanged();
 
@@ -84,11 +176,14 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public MyItemRecyclerViewAdapter(OnListFragmentInteractionListener listener) {
         mValues = new ArrayList<>();
         mValuesHashMap = new ConcurrentHashMap<>();
+
         mListener = listener;
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        mDatabaseRef.child("predictions").child(userId).addChildEventListener(mChildEventListener);
-//        createData();
+
+        mDatabaseRef.child("predictions").child(userId).addChildEventListener(mPredictionChildEventListener);
+        mDatabaseRef.child("results").addChildEventListener(mResultsChildEventListener);
+        mDatabaseRef.child("results").addValueEventListener(mResultsValueEventListener);
 
     }
 
@@ -102,6 +197,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+
         holder.mItem = mValuesHashMap.get(mValues.get(position).toString());
         holder.mTeam1NameView.setText(holder.mItem.getTeam1_name());
         holder.mTeam2NameView.setText(holder.mItem.getTeam2_name());
@@ -118,8 +214,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             Date date = format.parse(holder.mItem.getMatch_date_time());
             if (date.compareTo(new Date()) < 0){
 
-                Log.d("Fifaa", "holder date: "+date);
-                Log.d("Fifaa", "current date: "+ new Date());
                 holder.mTeam1ScoreView.setEnabled(false);
                 holder.mTeam2ScoreView.setEnabled(false);
             }
@@ -132,7 +226,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mSubmitScoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Fifaa","In Button: "+holder.mTeam1ScoreView.getText());
 
                 FootballMatch prediction = new FootballMatch(holder.mItem.getTeam1_name(),
                         Integer.parseInt(holder.mTeam1ScoreView.getText().toString()),
@@ -182,7 +275,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final TextView mTeam2ActualScoreView;
         public final Button mSubmitScoreButton;
         public final TextView mDateTimeView;
-        //TODO: Move this to admin application
+
         public FootballMatch mItem;
 
         public ViewHolder(View view) {
